@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -53,6 +54,7 @@ public class AppUserController {
     }
 
     @GetMapping("/user/get/id/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppUser>getUser(@PathVariable("id") Long id){
         return ResponseEntity.ok().body(appUserService.getUser(id));
     }
