@@ -1,79 +1,102 @@
-import axios from 'axios';
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useRef, useState, useEffect } from 'react';
+import useAuth from '../hooks/useAuth';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
-export default function AddUser() {
+import axios from '../api/axios';
+const LOGIN_URL = '/login';
 
-    let navigate = useNavigate();
+export default function Login() {
 
-    const [data, setData] = useState({
-        username: "",
-        password: ""
-    })
+    const { setAuth } = useAuth();
 
-    const { username, password } = data;
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/";
 
     const params = new URLSearchParams();
-    params.append('username', data.username);
-    params.append('password', data.password);
 
-    const onInputChange = (e) => {
-        setData({ ...data, [e.target.name]: e.target.value });
-    };
+    const userRef = useRef();
+    const errRef = useRef();
 
-    const onSubmit = async (e) => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [errMsg, setErrMsg] = useState('');
+
+    useEffect(() => {
+        userRef.current.focus();
+    }, [])
+
+    useEffect(() => {
+        setErrMsg('');
+    }, [username, password])
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        await axios.post("login", params)
-            .then(res => {
-                console.log(res);
-                localStorage.setItem('access_token', res.data.access_token);
-                localStorage.setItem('refresh_token', res.data.refresh_token);
-                navigate("/");
-            })
-            .catch(err => {
-                console.log(err);
-            })
+        params.append('username', username);
+        params.append('password', password);
+        try {
+            const response = await axios.post(LOGIN_URL, params);
+            console.log(response);
 
-    };
+            const access_token = response?.data?.access_token;
+            const refresh_token = response?.data?.refresh_token;
+            const user = await axios.get(`http://localhost:8080/api/user/${username}`, {
+                headers: {
+                    'Authorization': `Bearer ${access_token}`
+                }
+            })
+            const roles = user?.data?.roles;
+            console.log(roles);
+            setAuth({ username, password, roles, access_token, refresh_token });
+            setUsername('');
+            setPassword('');
+            navigate(from, { replace: true });
+            console.log("wtf");
+        } catch (err) {
+            if (!err?.response) {
+                setErrMsg('No Server Response');
+            } else if (err.response?.status === 401) {
+                setErrMsg('Invalid Credentials');
+            } else {
+                setErrMsg('Login Failed');
+            }
+            errRef.current.focus();
+        }
+    }
 
     return (
-        <div className="container">
-            <div className="row">
-                <div className="col-md-6 offset-md-3 border rounded p-4 mt-2 shadow">
-                    <h2 className="text-center m-4">Login</h2>
-                    <form onSubmit={(e) => onSubmit(e)}>
-                        <div className="mb-3">
-                            <label htmlFor="Username" className="form-label">
-                                Username
-                            </label>
-                            <input
-                                type={"text"}
-                                className="form-control"
-                                placeholder="Enter your username"
-                                name="username"
-                                value={username}
-                                onChange={(e) => onInputChange(e)}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="Password" className="form-label">
-                                Password
-                            </label>
-                            <input
-                                type={"password"}
-                                className="form-control"
-                                placeholder="Enter your password"
-                                name="password"
-                                value={password}
-                                onChange={(e) => onInputChange(e)}
-                            />
-                        </div>
-                        <button type="submit" className="btn btn-primary">
-                            Log in
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <section>
+            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+            <h1>Sign in</h1>
+            <form onSubmit={handleSubmit}>
+                <label htmlFor="username">Username:</label>
+                <input
+                    type="text"
+                    id="username"
+                    ref={userRef}
+                    autoComplete='off'
+                    onChange={(e) => setUsername(e.target.value)}
+                    value={username}
+                    required
+                    placeholder="Enter your username"
+                />
+                <label htmlFor="password">Password:</label>
+                <input
+                    type="password"
+                    id="password"
+                    onChange={(e) => setPassword(e.target.value)}
+                    value={password}
+                    required
+                    placeholder="Enter your password"
+                />
+                <button>Sign in</button>
+            </form>
+            <p>
+                Need an acount?<br />
+                <span className="line">
+                    <Link to="/register">Sign Up</Link>
+                </span>
+            </p>
+        </section >
     )
 }

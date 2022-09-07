@@ -9,6 +9,8 @@ import gr.hua.ds.demo.model.AppUser;
 import gr.hua.ds.demo.model.Request;
 import gr.hua.ds.demo.model.Role;
 import gr.hua.ds.demo.service.AppUserService;
+import gr.hua.ds.demo.service.RequestService;
+import gr.hua.ds.demo.service.RoleService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,32 +38,29 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 public class AppUserController {
     private final AppUserService appUserService;
+    private final RoleService roleService;
+    private final RequestService requestService;
 
     @GetMapping("/users")
     public ResponseEntity<List<AppUser>>getUsers() {
         return ResponseEntity.ok().body(appUserService.getUsers());
     }
 
-    @GetMapping("/user/get/username/{username}")
+    @GetMapping("/user/{username}")
     public ResponseEntity<AppUser>getUser(@PathVariable("username") String username) {
         return ResponseEntity.ok().body(appUserService.getUser(username));
     }
 
-    @DeleteMapping("/user/delete/id/{id}")
-    public ResponseEntity<?>deleteUser(@PathVariable("id") Long id){
-        appUserService.deleteUser(id);
+    @DeleteMapping("/user/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?>deleteUser(@PathVariable("username") String username){
+        appUserService.deleteUser(username);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/user/get/id/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AppUser>getUser(@PathVariable("id") Long id){
-        return ResponseEntity.ok().body(appUserService.getUser(id));
-    }
-
-    @PutMapping("/user/edit/id/{id}")
-    public ResponseEntity<AppUser>editUser(@RequestBody AppUser newAppUser, @PathVariable("id") Long id){
-        return ResponseEntity.ok().body(appUserService.editAppUser(newAppUser,id));
+    @PutMapping("/user/{username}")
+    public ResponseEntity<AppUser>editUser(@RequestBody AppUser newAppUser, @PathVariable("username") String username){
+        return ResponseEntity.ok().body(appUserService.editAppUser(newAppUser,username));
     }
 
     @PostMapping("/user/save")
@@ -72,29 +71,34 @@ public class AppUserController {
 
     @GetMapping("/roles")
     public ResponseEntity<List<Role>>getRoles() {
-        return ResponseEntity.ok().body(appUserService.getRoles());
+        return ResponseEntity.ok().body(roleService.getRoles());
     }
 
     @GetMapping("/role/{roleName}")
     public ResponseEntity<Role>getRole(@PathVariable("roleName") String roleName) {
-        return ResponseEntity.ok().body(appUserService.getRole(roleName));
+        return ResponseEntity.ok().body(roleService.getRole(roleName));
     }
 
     @PostMapping("/role/save")
     public ResponseEntity<Role>saveRole(@RequestBody Role role) {
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/save").toUriString());
-        return ResponseEntity.created(uri).body(appUserService.saveRole(role));
+        return ResponseEntity.created(uri).body(roleService.saveRole(role));
     }
 
-    @PostMapping("/role/addtouser")
-    public ResponseEntity<?>addRoleToUser(@RequestBody RoleToUserForm form) {
-        appUserService.addRoleToUser(form.getUsername(), form.getRoleName());
-        return ResponseEntity.ok().build();
+    @PostMapping("/user/add_role")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AppUser>addRoleToUser(@RequestBody RoleToUserForm form) {
+        return ResponseEntity.ok().body(appUserService.addRoleToUser(form.getUsername(), form.getRoleName()));
     }
 
     @GetMapping("/requests")
     public ResponseEntity<List<Request>>getRequests() {
-        return ResponseEntity.ok().body(appUserService.getRequests());
+        return ResponseEntity.ok().body(requestService.getRequests());
+    }
+
+    @GetMapping("/request/{id}")
+    public ResponseEntity<Request>getRequest(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(requestService.getRequest(id));
     }
 
     @GetMapping("/token/refresh")

@@ -1,29 +1,49 @@
-import './App.css';
-import "../node_modules/bootstrap/dist/css/bootstrap.min.css"
-import Navbar from './layout/Navbar';
 import Home from './pages/Home';
-import Roles from "./pages/Roles";
 import Login from "./pages/Login";
-import AddUser from './users/AddUser';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import EditUser from './users/EditUsers';
-import ViewUser from './users/ViewUser';
+import Register from "./pages/Register"
+
+import Layout from './pages/Layout';
+import LinkPage from './pages/LinkPage';
+import Unauthorized from './pages/Unauthorized';
+import Lounge from './pages/Lounge';
+import Missing from './pages/Missing';
+import Editor from './pages/Editor';
+import Admin from './pages/Admin';
+import RequireAuth from './pages/RequireAuth';
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route exact path="/roles" element={<Roles />} />
-          <Route exact path="/adduser" element={<AddUser />} />
-          <Route exact path="/edituser/:id" element={<EditUser />} />
-          <Route exact path="/viewuser/:id" element={<ViewUser />} />
-          <Route exact path="/login" element={<Login />} />
-        </Routes>
-      </Router>
-    </div>
+    <main className="App">
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          {/* public routes */}
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="LinkPage" element={<LinkPage />} />
+          <Route path="unauthorized" element={<Unauthorized />} />
+
+          {/* protected routes */}
+          <Route element={<RequireAuth allowedRoles={["ROLE_USER"]} />}>
+            <Route path="/" element={<Home />} />
+          </Route>
+
+          <Route element={<RequireAuth allowedRoles={["ROLE_MANAGER"]} />}>
+            <Route path="editor" element={<Editor />} />
+          </Route>
+
+          <Route element={<RequireAuth allowedRoles={["ROLE_ADMIN"]} />}>
+            <Route path="admin" element={<Admin />} />
+          </Route>
+          <Route element={<RequireAuth allowedRoles={["ROLE_MANAGER", "ROLE_ADMIN"]} />}>
+            <Route path="lounge" element={<Lounge />} />
+          </Route>
+
+          {/* catch all */}
+          <Route path="*" element={<Missing />} />
+        </Route>
+      </Routes>
+    </main>
   );
 }
 
