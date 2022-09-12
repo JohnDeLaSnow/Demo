@@ -58,6 +58,13 @@ public class AppUserController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/request/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?>deleteRequest(@PathVariable("id") Long id){
+        requestService.deleteRequest(id);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping("/user/{username}")
     public ResponseEntity<AppUser>editUser(@RequestBody AppUser newAppUser, @PathVariable("username") String username){
         return ResponseEntity.ok().body(appUserService.editAppUser(newAppUser,username));
@@ -90,7 +97,10 @@ public class AppUserController {
     public ResponseEntity<AppUser>addRoleToUser(@RequestBody RoleToUserForm form) {
         return ResponseEntity.ok().body(appUserService.addRoleToUser(form.getUsername(), form.getRoleName()));
     }
-
+    @PutMapping("/request/add_user")
+    public ResponseEntity<Request>addUserToRequest(@RequestBody UserToRequestForm form) {
+        return ResponseEntity.ok().body(requestService.addUserToRequest(form.getUsername(), form.getRequestId()));
+    }
     @GetMapping("/requests")
     public ResponseEntity<List<Request>>getRequests() {
         return ResponseEntity.ok().body(requestService.getRequests());
@@ -99,6 +109,32 @@ public class AppUserController {
     @GetMapping("/request/{id}")
     public ResponseEntity<Request>getRequest(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(requestService.getRequest(id));
+    }
+
+    @PostMapping("/request/save")
+    public ResponseEntity<Request>saveRequest(@RequestBody Request request){
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/request/save").toUriString());
+        return ResponseEntity.created(uri).body(requestService.saveRequest(request));
+    }
+
+    @PutMapping("/request/status/registered/{id}")
+    public ResponseEntity<Request>updateStatusRegistered(@PathVariable Long id){
+        return ResponseEntity.ok().body(requestService.updateStatusRegistered(id));
+    }
+
+    @PutMapping("/request/status/passed/{id}")
+    public ResponseEntity<Request>updateStatusPassed(@PathVariable Long id){
+        return ResponseEntity.ok().body(requestService.updateStatusPassed(id));
+    }
+
+    @PutMapping("/request/status/approved/{id}")
+    public ResponseEntity<Request>updateStatusApproved(@PathVariable Long id){
+        return ResponseEntity.ok().body(requestService.updateStatusApproved(id));
+    }
+
+    @GetMapping("/request/status/{status}")
+    public ResponseEntity<List<Request>>getRequestByStatus(@PathVariable String status){
+        return ResponseEntity.ok().body(requestService.getRequestsByStatus(status));
     }
 
     @GetMapping("/token/refresh")
@@ -142,4 +178,9 @@ public class AppUserController {
 class RoleToUserForm {
     private String username;
     private String roleName;
+}
+@Data
+class UserToRequestForm {
+    private String username;
+    private Long requestId;
 }

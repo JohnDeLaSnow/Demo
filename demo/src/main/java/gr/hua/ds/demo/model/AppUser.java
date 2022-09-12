@@ -19,7 +19,7 @@ public class AppUser {
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles = new ArrayList<>();
     @JsonIgnore
-    @OneToMany
+    @OneToMany(mappedBy = "appUser",cascade = CascadeType.ALL)
     private Collection<Request> requests = new ArrayList<>();
 
 }

@@ -41,24 +41,30 @@ public class DemoApplication {
 			appUserService.saveAppUser(new AppUser("jackdoe", "Jack","Doe","1234",new ArrayList<>(),new ArrayList<>()));
 			appUserService.saveAppUser(new AppUser("jimdoe", "Jim","Doe","1234",new ArrayList<>(),new ArrayList<>()));
 
-			requestService.saveRequest(new Request(null,"First Example",null));
-			requestService.saveRequest(new Request(null,"Second Example",null));
-			requestService.saveRequest(new Request(null,"Third Example",null));
-			requestService.saveRequest(new Request(null,"Fourth Example",null));
+			requestService.saveRequest(new Request(null,"First Example",null,null));
+			requestService.saveRequest(new Request(null,"Second Example",null,null));
+			requestService.saveRequest(new Request(null,"Third Example",null,null));
+			requestService.saveRequest(new Request(null,"Fourth Example",null,null));
 
 			appUserService.addRequestToUser("johndoe",Long.valueOf(1));
 			appUserService.addRequestToUser("johndoe",Long.valueOf(2));
 			appUserService.addRequestToUser("jackdoe",Long.valueOf(3));
 			appUserService.addRequestToUser("janedoe",Long.valueOf(4));
 
-
 			appUserService.addRoleToUser("johndoe","ROLE_USER");
+			appUserService.addRoleToUser("janedoe","ROLE_USER");
 			appUserService.addRoleToUser("janedoe","ROLE_MANAGER");
+			appUserService.addRoleToUser("jackdoe","ROLE_USER");
 			appUserService.addRoleToUser("jackdoe","ROLE_ADMIN");
 			appUserService.addRoleToUser("jimdoe","ROLE_MANAGER");
 			appUserService.addRoleToUser("jimdoe","ROLE_SUPER_ADMIN");
 			appUserService.addRoleToUser("jimdoe","ROLE_ADMIN");
 			appUserService.addRoleToUser("jimdoe","ROLE_USER");
+
+			requestService.updateStatusRegistered(Long.valueOf(1));
+			requestService.updateStatusRegistered(Long.valueOf(2));
+			requestService.updateStatusRegistered(Long.valueOf(3));
+			requestService.updateStatusRegistered(Long.valueOf(4));
 		};
 	}
 }

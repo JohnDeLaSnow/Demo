@@ -28,12 +28,13 @@ body {
 
 section {
   width: 100%;
-  max-width: 420px;
-  min-height: 400px;
+  text-align: center;
+  min-width: 600px;
+  min-height: 600px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 1rem;
+  padding: 0.5rem;
   background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -60,14 +61,52 @@ textarea {
   border: none;
 }
 
+table {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-collapse: collapse;
+  border: 1px solid;
+  text-align: center;
+}
+
+table,
+th,
+td {
+  margin-top: 1rem;
+  margin-left: 3rem;
+  margin-right: 3rem;
+
+}
+
+th,
+td {
+  padding: 8px;
+  border-bottom: 1px solid;
+  border-color: #fff;
+
+}
+
+th {
+  background-color: rgba(0, 0, 0, 0.4);
+  font-weight: bold;
+}
+
+tr:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
 label,
 button {
-  margin-top: 1rem;
+  margin: 0.5rem;
 }
 
 button {
   font-weight: bold;
+  background-color: aliceblue;
   padding: 0.5rem;
+}
+
+button:hover {
+  background-color: rgb(170, 181, 190);
 }
 
 .instructions {

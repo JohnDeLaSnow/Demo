@@ -1,7 +1,8 @@
 import Home from './pages/Home';
 import Login from "./pages/Login";
-import Register from "./pages/Register"
-
+import Register from "./pages/Register";
+import Officer from "./pages/Officer";
+import NewRequest from "./pages/NewRequest";
 import Layout from './pages/Layout';
 import LinkPage from './pages/LinkPage';
 import Unauthorized from './pages/Unauthorized';
@@ -26,6 +27,7 @@ function App() {
           {/* protected routes */}
           <Route element={<RequireAuth allowedRoles={["ROLE_USER"]} />}>
             <Route path="/" element={<Home />} />
+            <Route path="/request" element={<NewRequest />} />
           </Route>
 
           <Route element={<RequireAuth allowedRoles={["ROLE_MANAGER"]} />}>
@@ -34,6 +36,7 @@ function App() {
 
           <Route element={<RequireAuth allowedRoles={["ROLE_ADMIN"]} />}>
             <Route path="admin" element={<Admin />} />
+            <Route path="officer" element={<Officer />} />
           </Route>
           <Route element={<RequireAuth allowedRoles={["ROLE_MANAGER", "ROLE_ADMIN"]} />}>
             <Route path="lounge" element={<Lounge />} />

@@ -40,6 +40,7 @@ export default function Login() {
 
             const access_token = response?.data?.access_token;
             const refresh_token = response?.data?.refresh_token;
+            console.log(refresh_token);
             const user = await axios.get(`http://localhost:8080/api/user/${username}`, {
                 headers: {
                     'Authorization': `Bearer ${access_token}`
@@ -51,7 +52,6 @@ export default function Login() {
             setUsername('');
             setPassword('');
             navigate(from, { replace: true });
-            console.log("wtf");
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');

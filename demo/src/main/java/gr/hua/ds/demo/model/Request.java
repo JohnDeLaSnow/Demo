@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "request")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,6 +15,10 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String description;
-    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.DETACH,CascadeType.REFRESH},fetch = FetchType.LAZY)
+    private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "fk_user")
     private AppUser appUser;
 }
+

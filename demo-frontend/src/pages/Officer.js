@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom"
-import RequestsPass from "./RequestsPass"
+import RequestsApprove from "./RequestsApprove"
 
-const Editor = () => {
+const Officer = () => {
     return (
         <section>
-            <h1>Editors Page</h1>
+            <h1>Officer Page</h1>
             <br />
-            <RequestsPass />
+            <RequestsApprove />
             <br />
             <div className="flexGrow">
                 <Link to="/">Home</Link>
@@ -15,4 +15,4 @@ const Editor = () => {
     )
 }
 
-export default Editor
+export default Officer
